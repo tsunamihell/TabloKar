@@ -1,0 +1,60 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Role {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  title       String
+  permissions String   @default("[]")
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  passwordHash String
+  fullName     String
+  phone        String?
+  roleId       Int
+  role         Role     @relation(fields: [roleId], references: [id])
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model ShopSetting {
+  id            Int      @id @default(1)
+  shopName      String   @default("چاپ و تابلوسازی آبرنگ")
+  tagline       String?  @default("طراحی و ساخت انواع تابلوهای تبلیغاتی و حروف برجسته")
+  city          String   @default("میناب")
+  address       String   @default("هرمزگان، میناب، بلوار امام خمینی")
+  phone         String   @default("07642220000")
+  mobile        String?  @default("09170000000")
+  currency      String   @default("تومان")
+  receiptHeader String?  @default("چاپ آبرنگ میناب - فاکتور خدمات تابلوسازی")
+  receiptFooter String?  @default("از حسن اعتماد شما سپاسگزاریم. لطفاً در حفظ فاکتور کوشا باشید.")
+  logoUrl       String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model ProductTypeCatalog {
+  id               Int      @id @default(autoincrement())
+  code             String   @unique
+  name             String
+  unit             String
+  defaultBasePrice Int      @default(0)
+  description      String?
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+

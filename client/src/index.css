@@ -1,0 +1,16 @@
+@import '@fontsource/vazirmatn/400.css';
+@import '@fontsource/vazirmatn/500.css';
+@import '@fontsource/vazirmatn/600.css';
+@import '@fontsource/vazirmatn/700.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    direction: rtl;
+    text-align: right;
+  }
+}
+
