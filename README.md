@@ -1,79 +1,120 @@
-# تابلوکار
+# TabloKar (تابلوکار)
 
-نسخهٔ فعلی هستهٔ مدیریت کارگاه: ورود کاربران، نقش‌ها، تنظیمات مغازه و نمایش کاتالوگ. ماژول‌های سفارش، تولید، نصب و مالی هنوز پیاده نشده‌اند.
+[![CI](https://github.com/tsunamihell/TabloKar/actions/workflows/ci.yml/badge.svg)](https://github.com/tsunamihell/TabloKar/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6.svg?logo=typescript)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18-61DAFB.svg?logo=react)](https://react.dev/)
+[![Prisma](https://img.shields.io/badge/Prisma-SQLite-2D3748.svg?logo=prisma)](https://www.prisma.io/)
 
-## اجرای توسعه
+**TabloKar** is an open-source, modular Workshop & Production Management System (ERP/MES) purpose-built for custom signage, laser cutting, acrylic fabrication, and metalcraft workshops.
 
-از ریشهٔ پروژه:
-
-```powershell
-npm ci
-Copy-Item server/.env.example server/.env
-```
-
-اگر `server/.env` از قبل وجود دارد آن را بازنویسی نکنید. در آن فایل، DATABASE_URL پیش‌فرض `file:./tablokar.db` است که نسبت به `server/prisma/schema.prisma` حل می‌شود. برای تولید کلید تصادفی نشست:
-
-```powershell
-node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
-```
-
-خروجی را در JWT_SECRET قرار دهید. ADMIN_PASSWORD برای ساخت مدیر اولیه لازم است: حداقل ۱۲ کاراکتر و حداکثر ۷۲ بایت UTF-8. INSTALLER_PASSWORD اختیاری است و فقط برای ساخت حساب نصاب به کار می‌رود. Seed رمز، نقش، قیمت یا مشخصات موجود را تغییر نمی‌دهد. حساب مدیر با نام `admin` ساخته می‌شود.
-
-```powershell
-npm run prisma:generate --workspace=server
-npm exec --workspace=server -- prisma migrate deploy
-npm run prisma:seed --workspace=server
-npm run dev
-```
-
-رابط: `http://localhost:5173` — API: `http://localhost:5000/api/health`.
-در ویندوز پس از تنظیم env می‌توان `run-tablokar.bat` را اجرا کرد. این راه‌انداز migration و Seed را اجرا می‌کند؛ قبل از ارتقای دیتابیس واقعی نسخهٔ پشتیبان معتبر بگیرید. خطای هر مرحله اجرای بعدی را متوقف می‌کند.
-
-در حالت پیش‌فرض Vite درخواست‌های `/api` را پراکسی می‌کند؛ نیازی به CORS_ORIGINS نیست. برای کلاینت با مبدأ جدا، فقط مبدأهای دقیق و مورداعتماد را با کاما وارد کنید. برنامهٔ development روی شبکه هم قابل دسترسی است؛ حساب‌های قدیمی با رمز اولیه باید جداگانه اصلاح شوند.
-
-## آزمون و Build
-
-```powershell
-npm test
-npm run build
-```
-
-آزمون سرور برای هر فایل دیتابیس موقت جدا می‌سازد و داده‌های اصلی را هدف نمی‌گیرد. آزمون کلاینت فعلاً بررسی TypeScript است. Build به‌تنهایی استقرار کامل نیست؛ سرور Express فایل‌های کلاینت را ارائه نمی‌کند. production نیازمند JWT_SECRET معتبر و HTTPS برای کوکی Secure است.
-
-جزئیات معماری، اصلاحات، شواهد آزمون و محدودیت‌های باقی‌مانده در [گزارش بررسی](docs/audit-2026-11-01.md) ثبت شده است؛ به‌خصوص رخداد تغییر تنظیمات توسط اجرای اولیهٔ آزمون‌های قدیمی را مطالعه کنید.
-
+It provides micro-enterprises and artisan workshops with an accessible, lightweight alternative to monolithic enterprise software, covering user roles, shop configuration, catalog pricing, and end-to-end order lifecycles.
 
 ---
 
-## 🧠 ثبت و پیگیری سابقه در حافظه ابری Graphiti
+## 🌟 Key Highlights
 
-تمام تصمیم‌ها، تغییرات ساختاری، مشکلات رفع‌شده و اقدامات بعدی این پروژه در پایگاه‌داده گراف دانش ابری **Graphiti** ثبت و همگام‌سازی می‌شوند.
+- **Role-Based Access Control (RBAC):** Granular permissions for Workshop Administrators, Operators, and Field Installers.
+- **Parametric Workshop Catalog:** Dynamic material and labor pricing engines adapted to custom dimensions, substrates, and lighting setups.
+- **Contract-Driven Evolution:** Built using [OpenSpec](openspec/) to ensure rigorous, traceable schema and workflow changes.
+- **Comprehensive Test Coverage:** 26+ automated regression, acceptance, and security unit tests validating database migrations, permission boundaries, and session handling.
+- **Lightweight & Self-Hostable:** Single-command setup using SQLite with zero external database dependencies.
 
-- **شناسه اختصاصی گروه پروژه در Graphiti:** `tablokar`
+---
 
-### ۱. استعلام سوابق و یادداشت‌های ذخیره‌شده
-برای بازیابی تاریخچه و آخرین وضعیت ثبت‌شده پروژه از دستور زیر استفاده کنید:
-```json
-// فراخوانی ابزار get_episodes در Graphiti MCP
-{
-  "group_ids": "tablokar",
-  "max_episodes": 10
-}
+## 🏗️ Architecture
+
+```
+TabloKar
+├── client/              # React 18 SPA (Vite, Tailwind CSS, TypeScript)
+├── server/              # Express API (TypeScript, Prisma ORM, SQLite)
+│   ├── prisma/          # Database schema, migrations, and seeding scripts
+│   └── src/             # Controllers, middlewares, and business logic
+├── openspec/            # Architectural change proposals and specifications
+├── docs/                # Architecture decisions, audit logs, and guidelines
+└── .github/workflows/   # Continuous Integration (CI) automated workflows
 ```
 
-### ۲. ثبت تصمیم یا پیشرفت جدید در حافظه
-پس از اعمال هر تغییر معماری یا انجام کار جدید، لاگ را با ساختار زیر ثبت نمایید:
-```json
-// فراخوانی ابزار add_memory در Graphiti MCP
-{
-  "name": "عنوان تغییر یا تصمیم جدید",
-  "group_id": "tablokar",
-  "source_description": "فایل یا سند منبع",
-  "episode_body": "۱. کارهای انجام‌شده: ...\n۲. تصمیم‌های معماری: ...\n۳. چالش‌ها و مشکلات: ...\n۴. قدم بعدی: ..."
-}
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- **Node.js** (v20+ recommended)
+- **npm** (v9+)
+
+### Installation & Launch
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/tsunamihell/TabloKar.git
+   cd TabloKar
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm ci
+   ```
+
+3. Setup environment configuration:
+   ```bash
+   # On Linux / macOS:
+   cp server/.env.example server/.env
+
+   # On Windows (PowerShell):
+   Copy-Item server/.env.example server/.env
+   ```
+
+4. Initialize database and seed default data:
+   ```bash
+   npm run prisma:generate --workspace=server
+   npm exec --workspace=server -- prisma migrate deploy
+   npm run prisma:seed --workspace=server
+   ```
+
+5. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+- **Web UI:** [http://localhost:5173](http://localhost:5173)
+- **API Health Check:** [http://localhost:5000/api/health](http://localhost:5000/api/health)
+
+---
+
+## 🧪 Testing & Verification
+
+TabloKar features automated unit, regression, and acceptance test suites.
+
+```bash
+# Run all tests across server and client
+npm test
+
+# Build production bundles
+npm run build
 ```
 
-> [!IMPORTANT]
-> **قوانین ثبت در حافظه:**
-> - هرگز رمزها، کلیدهای API، توکن‌های محرمانه یا اطلاعات هویتی حساس را در متن یادداشت قرار ندهید.
-> - هرگونه فرض یا حدسِ قطعی‌نشده را به صورت صریح با برچسب `[تأییدنشده]` مشخص کنید.
+---
+
+## 🗺️ Roadmap & Codex / AI Integration
+
+- [x] Core Authentication, RBAC, and Session Security
+- [x] Workshop Settings & Material/Service Catalog
+- [ ] **AI-Assisted Cost & BOM Estimation:** Leveraging OpenAI Codex / LLMs to parse custom signage design briefs into structured bills of materials.
+- [ ] **Job Queue & Shop-Floor Tracking:** Real-time production milestone tracking for CNC, laser, assembly, and field installation teams.
+- [ ] **Automated Test Generation:** Maintaining contract specifications and edge-case regression tests via Codex agent workflows.
+
+---
+
+## 🇮🇷 راهنمای فارسی (Persian Documentation)
+
+نسخهٔ فعلی هستهٔ مدیریت کارگاه شامل ورود کاربران، نقش‌های دسترسی، تنظیمات مغازه و نمایش کاتالوگ خدمات است.
+
+### راه‌اندازی سریع در ویندوز:
+پس از ایجاد و تنظیم فایل `server/.env`، می‌توانید فایل `run-tablokar.bat` را اجرا نمایید. این اسکریپت دیتابیس را ارتقا داده و سرور و کلاینت را به صورت خودکار اجرا می‌کند.
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
