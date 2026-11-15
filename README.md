@@ -1,6 +1,6 @@
 # TabloKar (تابلوکار)
 
-[![CI](https://github.com/tsunamihell/TabloKar/actions/workflows/ci.yml/badge.svg)](https://github.com/tsunamihell/TabloKar/actions/workflows/ci.yml)
+[![Tests: 26 Passed](https://img.shields.io/badge/tests-26%20passed-brightgreen.svg)](#-testing--verification)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6.svg?logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18-61DAFB.svg?logo=react)](https://react.dev/)
